@@ -1,0 +1,1 @@
+export const MAIN_LAYOUT = () => import('@/layout/main/Index.vue')

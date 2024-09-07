@@ -1,0 +1,29 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "dependencies": {
+        "@primevue/themes": "^4.0.4",
+        "mitt": "^3.0.1",
+        "pinia": "^2.1.7",
+        "pinia-plugin-persistedstate": "^3.2.1",
+        "primevue": "^4.0.4",
+        "vue": "^3.4.29",
+        "vue-router": "^4.3.3"
+    },
+    "devDependencies": {
+        "@primevue/auto-import-resolver": "^4.0.4",
+        "@vitejs/plugin-vue": "^5.0.5",
+        "@vitejs/plugin-vue-jsx": "^4.0.0",
+        "axios": "^1.6.4",
+        "laravel-echo": "^1.16.1",
+        "laravel-vite-plugin": "^1.0",
+        "pusher-js": "^8.4.0-rc2",
+        "unocss": "^0.61.9",
+        "unplugin-vue-components": "^0.27.4",
+        "vite": "^5.0"
+    }
+}
