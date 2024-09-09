@@ -1,11 +1,11 @@
 <?php
 
-namespace Packages\BoardGame\Game\Board\Element;
+namespace Packages\BoardGame\Board\Element;
 
 use Illuminate\Support\Str;
-use Packages\BoardGame\Game\Board\BoardGame;
-use Packages\BoardGame\Game\GameManager;
-use Packages\BoardGame\Game\Player\Player;
+use Packages\BoardGame\Board\BoardGame;
+use Packages\BoardGame\GameManager;
+use Packages\BoardGame\Player\Player;
 
 class Element implements \Stringable
 {
@@ -89,6 +89,8 @@ class Element implements \Stringable
      */
     public function create(string $element, string $name =  null, array|null $attributes = null): Element
     {
+        $this->throwPhaseError('无法创建游戏元素。');
+
         $el = $this->createElement($element, $name, $attributes);
 
         $el->_t->setParent($this);
@@ -152,14 +154,13 @@ class Element implements \Stringable
      */
     protected function createElement(string $element, string $name =  null, \Closure|array|null $attributes = null): mixed
     {
-        $this->throwPhaseError('无法创建游戏元素。');
-
         $elementName = Str::lower(class_basename($element));
         $name = $name ?? $elementName;
 
-        if (!$this->_ctx->inClassRegistry($elementName)) {
-            $this->_ctx->pushClassRegistry($elementName);
+        if (!$this->_ctx->inClassRegistry($element)) {
+            $this->_ctx->pushClassRegistry($element);
         }
+
         $el = new $element($this->_ctx);
         $el->setName($name);
         $el->setGame($this->game);

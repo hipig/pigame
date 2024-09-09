@@ -1,10 +1,9 @@
 <?php
 
-namespace Packages\BoardGame\Game\Board;
+namespace Packages\BoardGame\Board;
 
 use Illuminate\Support\Arr;
-use Packages\BoardGame\Game\Board\Element\Element;
-use Packages\BoardGame\Game\Player\Player;
+use Packages\BoardGame\Board\Element\Element;
 
 class Piece extends Element
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Packages\BoardGame\Game\Board\Element;
+namespace Packages\BoardGame\Board\Element;
 
 abstract class ElementTree
 {

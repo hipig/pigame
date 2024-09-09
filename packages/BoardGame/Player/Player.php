@@ -1,12 +1,12 @@
 <?php
 
-namespace Packages\BoardGame\Game\Player;
+namespace Packages\BoardGame\Player;
 
 use ArrayAccess;
-use Packages\BoardGame\Game\Board\BoardGame;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use JsonSerializable;
+use Packages\BoardGame\Board\BoardGame;
 use Stringable;
 
 abstract class Player implements Arrayable, ArrayAccess, Jsonable, JsonSerializable, Stringable

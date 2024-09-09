@@ -1,19 +1,15 @@
 <?php
 
-namespace Packages\BoardGame\Game\Board\Element;
+namespace Packages\BoardGame\Board\Element;
 
-use Packages\BoardGame\Game\GameManager;
-use Packages\BoardGame\Game\Player\Player;
+use Packages\BoardGame\GameManager;
+use Packages\BoardGame\Player\Player;
 
 abstract class ElementContext
 {
-    protected GameManager $gameManager;
-
     protected Element|null $top;
 
     protected int $sequence;
-
-    protected array $classRegistry;
 
     protected mixed $namedSpaces;
 
@@ -26,6 +22,16 @@ abstract class ElementContext
     protected mixed $moves;
 
     protected bool $trackMovement;
+
+    public function __construct(
+        protected GameManager $gameManager,
+        protected array $classRegistry = []
+    ) {}
+
+    public static function make(GameManager $gameManager, $classRegistry = []): static
+    {
+        return new static($gameManager, $classRegistry);
+    }
 
     public function inClassRegistry($class): bool
     {

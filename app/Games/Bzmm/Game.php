@@ -4,11 +4,10 @@ namespace App\Games\Bzmm;
 
 
 use App\Games\Bzmm\Card\Card;
-use Packages\BoardGame\Game\Action\Action;
-use Packages\BoardGame\Game\Board\Piece;
-use Packages\BoardGame\Game\Board\Space;
-use Packages\BoardGame\Game\Player\Player;
-use \Packages\BoardGame\Game\Board\BoardGame;
+use Packages\BoardGame\Action\Action;
+use Packages\BoardGame\Action\Selection;
+use Packages\BoardGame\Board\BoardGame;
+use Packages\BoardGame\Board\Space;
 
 class Game
 {
@@ -24,12 +23,13 @@ class Game
             $hand->onEnter(Card::class, fn($card) => $card->showToAll());
         }
 
-        $hand = $game->create(Space::class, 'hand');
-        $hand->create(Piece::class, '');
-
         $game->defineActions(function (Action $action) {
-            $action->name('take')->handler(function (Player $player) {
-
+            $action->name('take')->selection(function (Selection $selection) {
+                $selection->number('number1')->min(1);
+                $selection->input('text1');
+            });
+            $action->name('take2')->selection(function (Selection $selection) {
+                $selection->number('test1');
             });
         });
     }

@@ -1,11 +1,10 @@
 <?php
 
-namespace Packages\BoardGame\Game\Player;
+namespace Packages\BoardGame\Player;
 
-use Packages\BoardGame\Game\Board\BoardGame;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
-use \Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Collection as BaseCollection;
+use Packages\BoardGame\Board\BoardGame;
 
 class PlayerCollection extends BaseCollection
 {
@@ -23,6 +22,8 @@ class PlayerCollection extends BaseCollection
      */
     protected BoardGame|null $game = null;
 
+    protected string $className;
+
     /**
      * 添加玩家
      *
@@ -31,16 +32,17 @@ class PlayerCollection extends BaseCollection
      */
     public function addPlayer(mixed $player): static
     {
-        if (is_array($player)) {
-            $player = Player::make($player);
-        }
+        $players = is_array($player) ? $player : func_get_args();
 
-        $player->setPlayers($this);
+        foreach ($players as $player) {
+            $player = (new $this->className)($player);
+            $player->setPlayers($this);
 
-        $this->push($player);
+            $this->push($player);
 
-        if (!is_null($this->game)) {
-            $player->setGame($this->game);
+            if (!is_null($this->game)) {
+                $player->setGame($this->game);
+            }
         }
 
         return $this;
@@ -112,5 +114,19 @@ class PlayerCollection extends BaseCollection
     public function getCurrentPosition(): array
     {
         return $this->currentPosition;
+    }
+
+    public function setClassName($className): static
+    {
+        $this->className = $className;
+
+        return $this;
+    }
+
+    public function setGame(BoardGame $game): static
+    {
+        $this->game = $game;
+
+        return $this;
     }
 }

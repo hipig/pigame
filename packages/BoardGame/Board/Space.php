@@ -1,8 +1,8 @@
 <?php
 
-namespace Packages\BoardGame\Game\Board;
+namespace Packages\BoardGame\Board;
 
-use Packages\BoardGame\Game\Board\Element\Element;
+use Packages\BoardGame\Board\Element\Element;
 
 abstract class Space extends Element
 {
@@ -44,12 +44,12 @@ abstract class Space extends Element
         $this->addEventHandler(self::EVENT_EXIT, $type, $handler);
     }
 
-    public function triggerEvent(string $event, Piece $el): void
+    public function triggerEvent(string $event, Element $el): void
     {
         if ($this->_visOnEnter) {
             $el->setVisible([
                 'default' => $this->_visOnEnter['default'],
-                'except' => $this->_visOnEnter['except'] === 'owner' ? ($this->owner ? $this->owner->position : null) : $this->_visOnEnter['except']
+                'except' => $this->_visOnEnter['except'] === 'owner' ? ($this->owner ? $this->owner->getPosition() : null) : $this->_visOnEnter['except']
             ]);
         };
 
