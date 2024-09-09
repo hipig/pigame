@@ -2,7 +2,7 @@
 
 namespace Packages\BoardGame\Board\Element;
 
-abstract class ElementTree
+class ElementTree
 {
     const ORDER_NORMAL = 'NORMAL';
     const ORDER_STACKING = 'STACKING';
@@ -72,7 +72,7 @@ abstract class ElementTree
         $this->order = $order;
     }
 
-    public function getOrder(): string
+    public function getOrder(): ?string
     {
         return $this->order;
     }

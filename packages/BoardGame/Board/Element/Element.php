@@ -30,7 +30,7 @@ class Element implements \Stringable
 
     static array $visibleAttributes = [];
 
-    protected function __construct(ElementContext $ctx)
+    public function __construct(ElementContext $ctx)
     {
         $ctx->clearClassRegistry();
 
@@ -195,6 +195,11 @@ class Element implements \Stringable
         if ($this->_ctx->getGameManager()?->getPhase() === $phase) {
             throw new \RuntimeException($phasePrefix ? $phasePrefix . '：' . $message : $message);
         }
+    }
+
+    protected function hasMoved(): bool
+    {
+        return $this->_t->getMoved() ?? !!$this->_t->getParent()?->hasMoved();
     }
 
     public function setName(string $name): Element

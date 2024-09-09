@@ -14,6 +14,15 @@ class Piece extends Element
 
     static bool $isPiece = true;
 
+    protected function createElement(string $element, string $name =  null, \Closure|array|null $attributes = null): Element
+    {
+        if (is_subclass_of($element, Space::class) || $element === Space::class) {
+            throw new \Exception('不能在 Piece 中创建 Space 元素');
+        }
+
+        return parent::createElement($element, $name, $attributes);
+    }
+
     public function showToAll(): static
     {
         unset($this->_visible);
@@ -61,6 +70,13 @@ class Piece extends Element
     public function setVisible($visible): static
     {
         $this->_visible = $visible;
+
+        return $this;
+    }
+
+    public function putInto(Element $to): static
+    {
+        // TODO: Implement putInto() method.
 
         return $this;
     }

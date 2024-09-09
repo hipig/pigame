@@ -3,9 +3,18 @@
 namespace Packages\BoardGame\Action;
 
 use Illuminate\Support\Str;
+use Packages\BoardGame\Action\Message\Message;
+use Packages\BoardGame\Action\Selection\Button;
+use Packages\BoardGame\Board\BoardGame;
+use Packages\BoardGame\Board\Element\Element;
+use Packages\BoardGame\Board\Element\ElementCollection;
+use Packages\BoardGame\Board\Piece;
 
 class Action
 {
+    const ORDER_MOVE = 'MOVE';
+    const ORDER_MESSAGE = 'MESSAGE';
+
     protected \Closure|bool $condition = true;
     protected array $selections = [];
 
@@ -17,8 +26,10 @@ class Action
 
     protected bool $mutated = false;
 
+    protected ?BoardGame $game = null;
+
     public function __construct(
-        protected ?string $name = null,
+        protected string $name,
         protected ?string $prompt = null,
         protected ?string $description = null
     )
@@ -28,11 +39,9 @@ class Action
         }
     }
 
-    public function name($name): static
+    public static function make($name): static
     {
-        $this->name = $name;
-
-        return $this;
+        return new static($name);
     }
 
     public function prompt($prompt): static
@@ -49,13 +58,11 @@ class Action
         return $this;
     }
 
-    public function selection(\Closure $callback): static
+    public function defineSelections(mixed ...$selections): static
     {
-        tap($this->createSelection(), function (Selection $selection) use ($callback) {
-            $callback($selection);
-
+        foreach ($selections as $selection) {
             $this->addSelection($selection);
-        });
+        }
 
         return $this;
     }
@@ -79,8 +86,51 @@ class Action
         return $this;
     }
 
-    protected function createSelection(): Selection
+    public function do(\Closure $move): static
     {
-        return new Selection();
+        $this->mutated = true;
+
+        $this->moves[] = $move;
+
+        $this->order[] = self::ORDER_MOVE;
+
+        return $this;
+    }
+
+    public function message(string $text, \Closure $args = null): static
+    {
+        return $this->messageTo(null, $text, $args);
+    }
+
+    public function messageTo(mixed $position, string $text, \Closure $args = null): static
+    {
+        $this->messages[] = Message::make($text, $args, $position);
+
+        $this->order[] = self::ORDER_MESSAGE;
+
+        return $this;
+    }
+
+    public function confirm(mixed $prompt): static
+    {
+        $confirm = is_string($prompt) ? $prompt : Message::make('{{__message__}}', function () use ($prompt) {
+            return [
+                '__message__' => $prompt()
+            ];
+        });
+        return $this->addSelection(Button::make('__confirm__')->prompt($prompt)->confirm($confirm));
+    }
+
+    public function move(Piece|string $piece, Element|string $into): static
+    {
+        $this->do(function ($args) use ($piece, $into) {
+            $selectedPiece = $piece instanceof Piece ? $piece : $args[$piece];
+            $selectedInto = $into instanceof Element ? $into : $args[$into];
+            if (is_array($selectedPiece)) {
+                (new ElementCollection(...$selectedPiece))->putInto($selectedInto);
+            } else {
+                $selectedPiece->move($selectedInto);
+            }
+        });
     }
 }

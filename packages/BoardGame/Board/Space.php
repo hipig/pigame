@@ -4,7 +4,7 @@ namespace Packages\BoardGame\Board;
 
 use Packages\BoardGame\Board\Element\Element;
 
-abstract class Space extends Element
+class Space extends Element
 {
     const EVENT_ENTER = 'ENTER';
 

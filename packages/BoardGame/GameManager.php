@@ -13,6 +13,7 @@ use Packages\BoardGame\Player\PlayerCollection;
 
 class GameManager
 {
+    const PHASE_NEW  = 'NEW';
     const PHASE_STARTED  = 'STARTED';
 
     protected PlayerCollection $players;
@@ -22,7 +23,7 @@ class GameManager
 
     protected array $actions = [];
 
-    protected string $phase;
+    protected string $phase = self::PHASE_NEW;
 
     public function __construct(string $playerClass, string $gameClass, mixed ...$elementClass)
     {
@@ -32,16 +33,32 @@ class GameManager
         $this->players->setGame($this->game);
     }
 
+    public function addAction(Action $action): static
+    {
+        $this->actions[] = $action;
+
+        return $this;
+    }
+
+    public function setActions(array $actions): static
+    {
+        $this->actions = $actions;
+
+        return $this;
+    }
 
     public function getPhase(): string
     {
         return $this->phase;
     }
 
-    public function addAction(Action $action): static
+    public function getGame(): BoardGame
     {
-        $this->actions[] = $action;
+        return $this->game;
+    }
 
-        return $this;
+    public function getPlayers(): PlayerCollection
+    {
+        return $this->players;
     }
 }

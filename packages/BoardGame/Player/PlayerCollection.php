@@ -20,7 +20,7 @@ class PlayerCollection extends BaseCollection
      *
      * @var BoardGame|null
      */
-    protected BoardGame|null $game = null;
+    protected ?BoardGame $game = null;
 
     protected string $className;
 
@@ -30,12 +30,12 @@ class PlayerCollection extends BaseCollection
      * @param mixed $player
      * @return $this
      */
-    public function addPlayer(mixed $player): static
+    public function addPlayer(mixed ...$player): static
     {
-        $players = is_array($player) ? $player : func_get_args();
+        $players = func_get_args();
 
         foreach ($players as $player) {
-            $player = (new $this->className)($player);
+            $player = (new $this->className)->fill($player);
             $player->setPlayers($this);
 
             $this->push($player);

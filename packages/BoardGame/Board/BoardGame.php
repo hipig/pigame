@@ -2,24 +2,39 @@
 
 namespace Packages\BoardGame\Board;
 
-use Packages\BoardGame\Action\Action;
+use Packages\BoardGame\Board\Element\Element;
+use Packages\BoardGame\Board\Element\ElementContext;
+use Packages\BoardGame\Player\Player;
+use Packages\BoardGame\Player\PlayerCollection;
 
 class BoardGame extends Space
 {
+    protected ?Element $pile = null;
 
-    public function defineActions(\Closure $callback): static
+    protected ?PlayerCollection $players = null;
+
+    protected ?Player $player = null;
+
+    protected ?int $random = null;
+
+    public function __construct(ElementContext $ctx)
     {
-        tap($this->createAction(), function (Action $action) use ($callback) {
-            $callback($action);
-
-            $this->_ctx->getGameManager()->addAction($action);
-        });
-
-        return $this;
+        parent::__construct((clone $ctx)->setTrackMovement(false));
+        $this->game = $this;
+        $this->random = rand();
+        if ($ctx->getGameManager()) {
+            $this->players = $ctx->getGameManager()->getPlayers();
+        }
+        $this->_ctx->setRemoved($this->createElement(Space::class, 'removed'));
+        $this->pile = $this->_ctx->getRemoved();
     }
 
-    protected function createAction(): Action
+    public function defineActions(mixed ...$actions): static
     {
-        return new Action();
+        foreach ($actions as $action) {
+            $this->_ctx->getGameManager()->addAction($action);
+        }
+
+        return $this;
     }
 }

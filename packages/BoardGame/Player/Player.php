@@ -9,7 +9,7 @@ use JsonSerializable;
 use Packages\BoardGame\Board\BoardGame;
 use Stringable;
 
-abstract class Player implements Arrayable, ArrayAccess, Jsonable, JsonSerializable, Stringable
+class Player
 {
     /**
      * 玩家唯一标识
@@ -128,6 +128,12 @@ abstract class Player implements Arrayable, ArrayAccess, Jsonable, JsonSerializa
     public function setPlayers(PlayerCollection $players): static
     {
         $this->_players = $players;
+        return $this;
+    }
+
+    public function setGame(BoardGame $game): static
+    {
+        $this->game = $game;
         return $this;
     }
 }

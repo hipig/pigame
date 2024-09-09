@@ -9,28 +9,32 @@ use Packages\BoardGame\Action\Selection;
 use Packages\BoardGame\Board\BoardGame;
 use Packages\BoardGame\Board\Space;
 
-class Game
+class Game extends \Packages\BoardGame\GameCreator
 {
-    public function setup(BoardGame $game)
+    public function createGame(BoardGame $game): void
     {
         $pool = $game->create(Space::class, 'pool');
 
-        $deal = $pool->create(Space::class, 'deal');
-        $discard = $pool->create(Space::class, 'discard');
+        $pool->create(Space::class, 'deal');
+        $pool->create(Space::class, 'discard');
 
         foreach ($game->players as $player) {
             $hand = $game->create(Space::class, 'hand')->setPlayer($player);
             $hand->onEnter(Card::class, fn($card) => $card->showToAll());
         }
 
-        $game->defineActions(function (Action $action) {
-            $action->name('take')->selection(function (Selection $selection) {
-                $selection->number('number1')->min(1);
-                $selection->input('text1');
-            });
-            $action->name('take2')->selection(function (Selection $selection) {
-                $selection->number('test1');
-            });
-        });
+
+        $game->defineActions(
+            Action::make('take')->defineSelections(
+                Selection\Number::make('test1'),
+                Selection\Number::make('test2')->min(1)->max(2),
+            ),
+            Action::make('take2')->defineSelections(
+                Selection\Number::make('test1'),
+                Selection\Number::make('test2')->min(1)->max(2),
+            ),
+        );
+
+        dd($game);
     }
 }
