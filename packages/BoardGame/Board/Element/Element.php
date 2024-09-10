@@ -4,11 +4,14 @@ namespace Packages\BoardGame\Board\Element;
 
 use Illuminate\Support\Str;
 use Packages\BoardGame\Board\BoardGame;
+use Packages\BoardGame\Concerns\WithPhaseError;
 use Packages\BoardGame\GameManager;
 use Packages\BoardGame\Player\Player;
 
 class Element implements \Stringable
 {
+    use WithPhaseError;
+
     protected string $name;
     protected ?Player $player = null;
 
@@ -89,7 +92,7 @@ class Element implements \Stringable
      */
     public function create(string $element, string $name =  null, array|null $attributes = null): Element
     {
-        $this->throwPhaseError('无法创建游戏元素。');
+        $this->throwPhaseError('无法创建游戏元素。', $this->_ctx->getGameManager()?->getPhase());
 
         $el = $this->createElement($element, $name, $attributes);
 
@@ -184,17 +187,6 @@ class Element implements \Stringable
         }
 
         return $el;
-    }
-
-    public function throwPhaseError($message, $phase = GameManager::PHASE_STARTED): void
-    {
-        $phasePrefix = match ($phase) {
-            GameManager::PHASE_STARTED => '游戏已开始',
-            default => ''
-        };
-        if ($this->_ctx->getGameManager()?->getPhase() === $phase) {
-            throw new \RuntimeException($phasePrefix ? $phasePrefix . '：' . $message : $message);
-        }
     }
 
     protected function hasMoved(): bool

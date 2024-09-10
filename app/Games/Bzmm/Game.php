@@ -8,6 +8,7 @@ use Packages\BoardGame\Action\Action;
 use Packages\BoardGame\Action\Selection;
 use Packages\BoardGame\Board\BoardGame;
 use Packages\BoardGame\Board\Space;
+use Packages\BoardGame\Player\Player;
 
 class Game extends \Packages\BoardGame\GameCreator
 {
@@ -25,11 +26,11 @@ class Game extends \Packages\BoardGame\GameCreator
 
 
         $game->defineActions(
-            Action::make('take')->defineSelections(
+            fn(Player $player) => Action::make('take')->defineSelections(
                 Selection\Number::make('test1'),
                 Selection\Number::make('test2')->min(1)->max(2),
             ),
-            Action::make('take2')->defineSelections(
+            fn(Player $player) => Action::make('take2')->defineSelections(
                 Selection\Number::make('test1'),
                 Selection\Number::make('test2')->min(1)->max(2),
             ),

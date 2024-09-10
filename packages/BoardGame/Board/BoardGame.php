@@ -15,13 +15,15 @@ class BoardGame extends Space
 
     protected ?Player $player = null;
 
-    protected ?int $random = null;
+    protected ?\Closure $random = null;
 
     public function __construct(ElementContext $ctx)
     {
         parent::__construct((clone $ctx)->setTrackMovement(false));
         $this->game = $this;
-        $this->random = rand();
+        $this->random = $ctx->getGameManager()?->getRandom() ?? function () {
+            return mt_rand();
+        };
         if ($ctx->getGameManager()) {
             $this->players = $ctx->getGameManager()->getPlayers();
         }
@@ -34,6 +36,18 @@ class BoardGame extends Space
         foreach ($actions as $action) {
             $this->_ctx->getGameManager()->addAction($action);
         }
+
+        return $this;
+    }
+
+    public function getRandom(): \Closure|null
+    {
+        return $this->random;
+    }
+
+    public function setRandom(\Closure $random): static
+    {
+        $this->random = $random;
 
         return $this;
     }
