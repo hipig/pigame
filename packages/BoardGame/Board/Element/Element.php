@@ -2,13 +2,14 @@
 
 namespace Packages\BoardGame\Board\Element;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 use Packages\BoardGame\Board\BoardGame;
 use Packages\BoardGame\Concerns\WithPhaseError;
 use Packages\BoardGame\GameManager;
 use Packages\BoardGame\Player\Player;
 
-class Element implements \Stringable
+class Element
 {
     use WithPhaseError;
 
@@ -206,6 +207,17 @@ class Element implements \Stringable
     public function setGame(BoardGame $game): Element
     {
         $this->game = $game;
+
+        return $this;
+    }
+
+    public function shuffle(): static
+    {
+        $refs = $this->childRefsIfObscured();
+        shuffleArray((array)$this->_t->getChildren(), $this->_ctx->getGameManager()->getRandom() ?? fn() => mt_rand());
+        if ($refs) {
+            $this->assignChildRefs($refs);
+        }
 
         return $this;
     }

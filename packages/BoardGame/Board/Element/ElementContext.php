@@ -90,7 +90,7 @@ class ElementContext
 
     public function getNamedSpaces(mixed $target = null): mixed
     {
-        return is_null($target) ? $this->uniqueNames : $this->uniqueNames[$target];
+        return is_null($target) ? $this->namedSpaces : $this->namedSpaces[$target];
     }
 
     public function setNamedSpaces(mixed $target, mixed $value = null): static

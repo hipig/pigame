@@ -19,8 +19,6 @@ abstract class Selection
 
     protected array $clientContext = [];
 
-    protected array $choices = [];
-
     protected ?string $skipIf = self::SKIP_IF_ONLY_ONE;
 
     public function __construct(

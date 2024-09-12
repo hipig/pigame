@@ -51,4 +51,11 @@ class BoardGame extends Space
 
         return $this;
     }
+
+    public function __get($name)
+    {
+        parent::__get($name);
+
+        return $this->_ctx->getNamedSpaces($name);
+    }
 }

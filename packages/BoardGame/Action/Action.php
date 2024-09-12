@@ -58,7 +58,7 @@ class Action
         return $this;
     }
 
-    public function defineSelections(mixed ...$selections): static
+    public function selection(mixed ...$selections): static
     {
         foreach ($selections as $selection) {
             $this->addSelection($selection);

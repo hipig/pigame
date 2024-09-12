@@ -25,7 +25,8 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Packages\\": "packages/"
-        }
+        },
+        "files": ["packages/BoardGame/helpers.php"]
     },
     "autoload-dev": {
         "psr-4": {
