@@ -74,9 +74,59 @@ class Piece extends Element
         return $this;
     }
 
-    public function putInto(Element $to): static
+    public function position()
     {
-        // TODO: Implement putInto() method.
+        return $this->_t->getParent()?->_t?->getChildren()->search(fn($e) => $e === $this) ?? -1;
+    }
+
+    function putInto(Element $to, $options = []): static
+    {
+        if ($to->isDescendantOf($this)) {
+            throw new \RuntimeException("不能移动 " . $this . " 元素自己");
+        }
+
+        $pos = $to->_t->getOrder() === 'stacking' ? 0 : count($to->_t->getChildren());
+        if (isset($options['position'])) {
+            $pos = $options['position'] >= 0 ? $options['position'] : count($to->_t->getChildren()) + $options['position'] + 1;
+        }
+        if (isset($options['fromTop'])) {
+            $pos = $options['fromTop'];
+        }
+        if (isset($options['fromBottom'])) {
+            $pos = count($to->_t->getChildren()) - $options['fromBottom'];
+        }
+
+        $previousParent = $this->_t->getParent();
+        $position = $this->position();
+
+        $refs = ($previousParent === $to && !isset($options['row']) && !isset($options['column'])) ? $to->childRefsIfObscured() : [];
+        $this->_t->getParent()->_t->getChildren()->splice($position, 1);
+        $this->_t->setParent($to);
+        $to->_t->getChildren()->splice($pos, 0, [$this]);
+
+        if ($refs) {
+            $to->assignChildRefs($refs);
+        }
+
+        if ($previousParent !== $to && $previousParent instanceof Space) {
+            $previousParent->triggerEvent("exit", $this);
+        }
+        if ($previousParent !== $to && $this->_ctx->getTrackMovement()) {
+            $this->_t->setMoved(true);
+        }
+
+        unset($this->column);
+        unset($this->row);
+        if (isset($options['row'])) {
+            $this->row = $options['row'];
+        }
+        if (isset($options['column'])) {
+            $this->column = $options['column'];
+        }
+
+        if ($previousParent !== $to && $to instanceof Space) {
+            $to->triggerEvent("enter", $this);
+        }
 
         return $this;
     }

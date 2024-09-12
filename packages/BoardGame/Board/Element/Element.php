@@ -197,11 +197,6 @@ class Element implements \Stringable
         }
     }
 
-    protected function hasMoved(): bool
-    {
-        return $this->_t->getMoved() ?? !!$this->_t->getParent()?->hasMoved();
-    }
-
     public function setName(string $name): Element
     {
         $this->name = $name;
@@ -221,5 +216,63 @@ class Element implements \Stringable
         $this->game = $game;
 
         return $this;
+    }
+
+    public function childRefsIfObscured(): ?array
+    {
+        if ($this->_t->getOrder() !== 'stacking') {
+            return null;
+        }
+
+        $refs = [];
+        foreach ($this->_t->getChildren() as $child) {
+            if ($this->_ctx->getTrackMovement()) {
+                if (!isset($child->_t->wasRef)) {
+                    $child->_t->wasRef = $child->_t->ref;
+                }
+            }
+            $refs[] = $child->_t->ref;
+        }
+
+        return $refs;
+    }
+
+    public function assignChildRefs(array $refs = []): static
+    {
+        foreach ($refs as $i => $ref) {
+            $this->_t->getChildren()[$i]->_t->setRef($ref);
+        }
+
+        return $this;
+    }
+
+    public function hasMoved(): bool
+    {
+        return $this->_t->getMoved() ?? !!$this->_t->getParent()?->hasMoved();
+    }
+
+    public function resetMovementTracking(): static
+    {
+        $this->_t->setMoved(false);
+        foreach ($this->_t->getChildren() as $child) {
+            $child->resetMovementTracking();
+        }
+
+        return $this;
+    }
+
+    public function resetRefTracking(): static
+    {
+        $this->_t->setWasRef(null);
+        foreach ($this->_t->getChildren() as $child) {
+            $child->resetRefTracking();
+        }
+
+        return $this;
+    }
+
+    public function isDescendantOf(Element $element): bool
+    {
+        return $this->_t->getParent() === $element || $this->_t->getParent()?->isDescendantOf($element);
     }
 }

@@ -8,9 +8,39 @@ use Packages\BoardGame\Action\Action;
 use Packages\BoardGame\Action\Selection;
 use Packages\BoardGame\Board\BoardGame;
 use Packages\BoardGame\Board\Space;
+use Packages\BoardGame\Player\Player;
 
-class Game extends \Packages\BoardGame\GameCreator
+class Game
 {
+    public function player(): string
+    {
+        return Player::class;
+    }
+
+    public function game(): string
+    {
+        return BoardGame::class;
+    }
+
+    public function create(BoardGame $game)
+    {
+
+    }
+
+    public function actions(Player $player): array
+    {
+        return [
+            Action::make('take')->defineSelections(
+                Selection\Number::make('test1'),
+                Selection\Number::make('test2')->min(1)->max(2),
+            ),
+            Action::make('take2')->defineSelections(
+                Selection\Number::make('test1'),
+                Selection\Number::make('test2')->min(1)->max(2),
+            ),
+        ];
+    }
+
     public function createGame(BoardGame $game): void
     {
         $pool = $game->create(Space::class, 'pool');

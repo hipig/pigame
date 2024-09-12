@@ -17,6 +17,8 @@ abstract class Selection
 
     protected string $type;
 
+    protected array $clientContext = [];
+
     protected array $choices = [];
 
     protected ?string $skipIf = self::SKIP_IF_ONLY_ONE;
@@ -49,5 +51,22 @@ abstract class Selection
         $this->confirm = $confirm;
 
         return $this;
+    }
+
+    public function setClientContext($clientContext): static
+    {
+        $this->clientContext = $clientContext;
+
+        return $this;
+    }
+
+    public function isMulti(): bool
+    {
+        return in_array($this->type, [self::TYPE_CHOOSE, self::TYPE_BOARD]) && !is_null($this->min) && !is_null($this->max);
+    }
+
+    public function isBoardChoose(): bool
+    {
+        return in_array($this->type, [self::TYPE_BOARD, self::TYPE_PLACE]);
     }
 }

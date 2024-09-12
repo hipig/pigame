@@ -129,8 +129,33 @@ class Action
             if (is_array($selectedPiece)) {
                 (new ElementCollection(...$selectedPiece))->putInto($selectedInto);
             } else {
-                $selectedPiece->move($selectedInto);
+                $selectedPiece->putInto($selectedInto);
             }
         });
+
+        $pieceSelection = is_string($piece) ? $this->selections[$piece] : null;
+        $intoSelection = is_string($into) ? $this->selections[$into] : null;
+
+        if ($intoSelection && $intoSelection['type'] !== Selection::TYPE_BOARD) {
+            throw new \RuntimeException("Invalid move: \"$into\" must be the name of a previous chooseOnBoard");
+        }
+
+        if ($pieceSelection && $pieceSelection['type'] !== Selection::TYPE_BOARD) {
+            throw new \RuntimeException("Invalid move: \"$piece\" must be the name of a previous chooseOnBoard");
+        }
+
+        if ($intoSelection && $intoSelection->isMulti()) {
+            throw new \RuntimeException("Invalid move: May not move into a multiple choice selection");
+        }
+
+        if ($pieceSelection && !$pieceSelection->isMulti()) {
+            $pieceSelection->setClientContext(['dragInto' => $intoSelection ?? $into]);
+        }
+
+        if ($intoSelection) {
+            $intoSelection->setClientContext(['dragFrom' => $pieceSelection ?? $piece]);
+        }
+
+        return $this;
     }
 }
