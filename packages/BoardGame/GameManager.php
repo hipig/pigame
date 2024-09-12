@@ -3,22 +3,33 @@
 namespace Packages\BoardGame;
 
 
+use http\Exception\InvalidArgumentException;
+use http\Exception\RuntimeException;
 use Packages\BoardGame\Action\Action;
 use Packages\BoardGame\Board\BoardGame;
 use Packages\BoardGame\Board\Element\Element;
 use Packages\BoardGame\Board\Element\ElementContext;
 use Packages\BoardGame\Board\Piece;
 use Packages\BoardGame\Board\Space;
+use Packages\BoardGame\Concerns\WithPhaseError;
 use Packages\BoardGame\Player\PlayerCollection;
 
 class GameManager
 {
+    use WithPhaseError;
     const PHASE_NEW  = 'NEW';
     const PHASE_STARTED  = 'STARTED';
+    const PHASE_FINISHED  = 'FINISHED';
+
+    protected array $flows = [];
+
+    protected array $flowState = [];
 
     protected PlayerCollection $players;
 
     protected BoardGame $game;
+
+    protected array $settings = [];
 
     protected array $actions = [];
 
@@ -48,20 +59,26 @@ class GameManager
         $this->players->setGame($this->game);
     }
 
-    public function setRandomSeed($rseed): static
+    public function start(): static
     {
-        $this->rseed = $rseed;
-        $this->random = function () {
-            return mt_rand();
-        };
-        if ($this->game->getRandom()) {
-            $this->game->setRandom($this->random);
-        }
+        $this->throwPhaseError('无法再次开始。', $this->phase);
+
+        if ($this->players->isEmpty()) throw new InvalidArgumentException("没有玩家");
+
+        $this->phase = self::PHASE_STARTED;
+        $this->players->setCurrent($this->players->first());
+        $this->flowState = [
+            [
+                'stack' => [],
+                'currentPosition' => $this->players->getCurrentPosition(),
+            ]
+        ];
 
         return $this;
     }
 
-    public function addAction(Action $action): static
+
+    public function addAction(\Closure $action): static
     {
         $this->actions[] = $action;
 
@@ -82,8 +99,31 @@ class GameManager
             '-' => $this->sequence -= $sequence,
             default => $this->sequence = $sequence,
         };
+    }
+    public function setSetting(string $key, mixed $value): static
+    {
+        $this->settings[$key] = $value;
 
         return $this;
+    }
+
+    public function setRandomSeed(string $seed): static
+    {
+        $this->rseed = $seed;
+        $this->random = function () {
+            return mt_rand(0, 1000);
+        };
+
+        if ($this->game->getRandom()) {
+            $this->game->setRandom($this->random);
+        }
+
+        return $this;
+    }
+
+    public function getRandom(): \Closure|null
+    {
+        return $this->random;
     }
 
     public function getPhase(): string

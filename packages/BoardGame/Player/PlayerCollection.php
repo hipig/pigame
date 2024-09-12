@@ -87,10 +87,8 @@ class PlayerCollection extends BaseCollection
      * @param mixed $items
      * @return $this
      */
-    public function setCurrent(mixed $items): static
+    public function setCurrent(mixed ...$items): static
     {
-        $items = is_array($items) ? $items : func_get_args();
-
         $this->currentPosition = Arr::map($items, fn($item) => $item instanceof Player ? $item->getPosition() : $item);
 
         return $this;

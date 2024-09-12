@@ -29,7 +29,7 @@ class Space extends Element
 
     protected function addEventHandler(string $event, $type, $handler): void
     {
-        $this->throwPhaseError('无法响应事件。');
+        $this->throwPhaseError('无法响应事件。', $this->_ctx->getGameManager()?->getPhase());
 
         $this->_eventHandlers[$event][$type][] = $handler;
     }

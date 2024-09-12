@@ -21,7 +21,7 @@ class BoardGame extends Space
     {
         parent::__construct((clone $ctx)->setTrackMovement(false));
         $this->game = $this;
-        $this->random = function () {
+        $this->random = $ctx->getGameManager()?->getRandom() ?? function () {
             return mt_rand();
         };
         if ($ctx->getGameManager()) {
@@ -40,12 +40,12 @@ class BoardGame extends Space
         return $this;
     }
 
-    public function getRandom(): ?\Closure
+    public function getRandom(): \Closure|null
     {
         return $this->random;
     }
 
-    public function setRandom($random): static
+    public function setRandom(\Closure $random): static
     {
         $this->random = $random;
 
