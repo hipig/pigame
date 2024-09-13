@@ -46,13 +46,15 @@ class Game implements GameContract
     {
         $pool = $game->create(Space::class, 'pool');
 
-        $pool->create(Space::class, 'deal');
-        $pool->create(Space::class, 'discard');
-
         foreach ($game->players as $player) {
-            $hand = $game->create(Space::class, 'hand')->setPlayer($player);
+            $hand = $game->create(Space::class, 'mat')->setPlayer($player);
             $hand->onEnter(Card::class, fn($card) => $card->showToAll());
         }
+
+        $deal = $pool->create(Space::class, 'deal');
+        $deal->onEnter(Card::class, fn($card) => $card->hideFromAll());
+
+        $discard = $pool->create(Space::class, 'discard');
     }
 
     /**

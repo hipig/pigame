@@ -28,7 +28,7 @@ class Element
 
     protected ElementTree $_t;
 
-    static bool $isGameElement = true;
+    static bool $isElement = true;
 
     static array $unserializableAttributes = ['_ctx', '_t', 'game'];
 
